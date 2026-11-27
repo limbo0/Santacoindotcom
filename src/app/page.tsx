@@ -1,6 +1,7 @@
 import Link from "next/link";
 import Coin from "@/components/Coin";
 import CopyAddress from "@/components/CopyAddress";
+import TrackedLink from "@/components/TrackedLink";
 import { isLaunched, site } from "@/config/site";
 import GamePreview from "@/game/GamePreview";
 import { fredoka } from "@/lib/fonts";
@@ -13,16 +14,18 @@ function XIcon({ className = "h-5 w-5" }: { className?: string }) {
   );
 }
 
-function FollowButton({ className = "" }: { className?: string }) {
+function FollowButton({ location, className = "" }: { location: string; className?: string }) {
   return (
-    <a
+    <TrackedLink
       href={site.xUrl}
       target="_blank"
       rel="noopener noreferrer"
+      event="Follow X"
+      location={location}
       className={`sticker-btn bg-snow text-ink ${className}`}
     >
       <XIcon /> Follow @{site.xHandle}
-    </a>
+    </TrackedLink>
   );
 }
 
@@ -52,16 +55,18 @@ function Hero() {
               {site.coinName}
             </span>
           </Link>
-          <a
+          <TrackedLink
             href={site.xUrl}
             target="_blank"
             rel="noopener noreferrer"
+            event="Follow X"
+            location="nav"
             aria-label={`${site.coinName} on X`}
             className="sticker-btn bg-snow px-4 py-2.5 text-base text-ink"
           >
             <XIcon className="h-4 w-4" />
             <span className="hidden sm:inline">@{site.xHandle}</span>
-          </a>
+          </TrackedLink>
         </nav>
 
         <div className="mt-12 grid items-center gap-12 md:mt-16 md:grid-cols-[1.15fr_0.85fr]">
@@ -82,10 +87,10 @@ function Hero() {
               follow @{site.xHandle} so you catch the launch.
             </p>
             <div className="mt-8 flex flex-wrap gap-4">
-              <Link href="/play" className="sticker-btn bg-holly text-snow">
+              <TrackedLink href="/play" event="Play Click" location="hero" className="sticker-btn bg-holly text-snow">
                 Play the game
-              </Link>
-              <FollowButton />
+              </TrackedLink>
+              <FollowButton location="hero" />
             </div>
           </div>
 
@@ -141,8 +146,10 @@ function GameSection() {
   return (
     <section id="game" className="relative bg-night text-snow">
       <div className={`${gutter} grid items-center gap-12 py-20 md:grid-cols-[0.8fr_1.2fr] sm:py-28`}>
-        <Link
+        <TrackedLink
           href="/play"
+          event="Play Click"
+          location="preview"
           aria-label={`Play ${site.gameName}`}
           className="focus-ring group relative mx-auto block w-full max-w-[320px] md:order-none"
         >
@@ -155,7 +162,7 @@ function GameSection() {
           >
             Tap to play
           </span>
-        </Link>
+        </TrackedLink>
 
         <div className="min-w-0">
           <p className="font-display text-lg tracking-widest text-gold">The game</p>
@@ -177,9 +184,9 @@ function GameSection() {
             ))}
           </ul>
           <div className="mt-8 flex flex-wrap items-center gap-4">
-            <Link href="/play" className="sticker-btn bg-candy text-snow">
+            <TrackedLink href="/play" event="Play Click" location="game" className="sticker-btn bg-candy text-snow">
               Play {site.gameName}
-            </Link>
+            </TrackedLink>
             <span className="rounded-full border-[3px] border-dashed border-gold/70 px-4 py-2 text-sm font-semibold text-gold">
               Solana wallet leaderboard coming soon
             </span>
@@ -235,14 +242,16 @@ function HowToBuy() {
           {isLaunched && site.contractAddress ? (
             <div className="mt-4 flex flex-col gap-4">
               <CopyAddress address={site.contractAddress} />
-              <a
+              <TrackedLink
                 href={site.pumpFunUrl!}
                 target="_blank"
                 rel="noopener noreferrer"
+                event="Buy Click"
+                location="how-to-buy"
                 className="sticker-btn self-start bg-holly text-snow"
               >
                 Buy on {site.launchpad}
-              </a>
+              </TrackedLink>
             </div>
           ) : (
             <p className="mt-3 font-display text-4xl leading-none tracking-wide sm:text-5xl">Drops at launch</p>
@@ -266,7 +275,7 @@ function FollowCta() {
         <p className="max-w-lg text-lg font-medium text-snow">
           Launch time, the contract address and leaderboard news land on X first.
         </p>
-        <FollowButton className="text-xl" />
+        <FollowButton location="follow-cta" className="text-xl" />
       </div>
     </section>
   );
@@ -282,15 +291,22 @@ function Footer() {
             <span className="font-display text-xl tracking-wide">{site.coinName}</span>
           </div>
           <nav className="flex flex-wrap gap-6 text-snow/80">
-            <Link href="/play" className="focus-ring hover:text-gold">
+            <TrackedLink href="/play" event="Play Click" location="footer" className="focus-ring hover:text-gold">
               Play {site.gameName}
-            </Link>
+            </TrackedLink>
             <a href="#buy" className="focus-ring hover:text-gold">
               How to buy
             </a>
-            <a href={site.xUrl} target="_blank" rel="noopener noreferrer" className="focus-ring hover:text-gold">
+            <TrackedLink
+              href={site.xUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              event="Follow X"
+              location="footer"
+              className="focus-ring hover:text-gold"
+            >
               X / Twitter
-            </a>
+            </TrackedLink>
           </nav>
         </div>
         <p className="max-w-3xl text-sm leading-relaxed text-snow/55">

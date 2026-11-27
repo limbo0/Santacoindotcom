@@ -1,5 +1,6 @@
 "use client";
 
+import { track } from "@vercel/analytics";
 import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { Scene } from "./render";
 import { createGame, HEIGHT, simulate, step, TICK_RATE, WIDTH, type GameState } from "./sim";
@@ -74,6 +75,7 @@ export default function Game({ fontFamily = "system-ui, sans-serif", homeHref }:
     phaseRef.current = "playing";
     setPhase("playing");
     setResult(null);
+    track("Game Start");
   }, []);
 
   const finish = useCallback((s: GameState) => {
@@ -92,6 +94,12 @@ export default function Game({ fontFamily = "system-ui, sans-serif", homeHref }:
       verified,
       seed: s.seed,
       drops: s.drops.length,
+    });
+    track("Game Over", {
+      score: s.score,
+      seconds: Math.round(s.tick / TICK_RATE),
+      deliveries: s.deliveries,
+      verified,
     });
     overAtRef.current = performance.now();
     phaseRef.current = "over";

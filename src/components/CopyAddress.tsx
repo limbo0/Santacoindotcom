@@ -1,5 +1,6 @@
 "use client";
 
+import { track } from "@vercel/analytics";
 import { useState } from "react";
 
 export default function CopyAddress({ address }: { address: string }) {
@@ -14,6 +15,7 @@ export default function CopyAddress({ address }: { address: string }) {
         onClick={async () => {
           try {
             await navigator.clipboard.writeText(address);
+            track("Copy Address");
             setCopied(true);
             setTimeout(() => setCopied(false), 1800);
           } catch {
