@@ -6,6 +6,8 @@
  * to showing the address (with a copy button) and a buy button.
  */
 export const site = {
+  /** Official domain. Used for share links/images and the vercel.app redirect. */
+  url: "https://santacoindotcom.com",
   coinName: "Santa Coin",
   gameName: "Santacoindotcom",
   xHandle: "Santacoindotcom",

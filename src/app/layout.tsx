@@ -6,6 +6,8 @@ import "./globals.css";
 const description = `${site.coinName} is a Christmas memecoin launching soon on ${site.launchpad}. Play ${site.gameName}, drop gifts down chimneys, and follow @${site.xHandle} for the launch.`;
 
 export const metadata: Metadata = {
+  metadataBase: new URL(site.url),
+  alternates: { canonical: "/" },
   title: {
     default: `${site.coinName} | Launching soon on ${site.launchpad}`,
     template: `%s | ${site.coinName}`,
