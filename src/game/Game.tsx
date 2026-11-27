@@ -2,6 +2,7 @@
 
 import { track } from "@vercel/analytics";
 import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
+import { readMuted, SoundBoard, subscribeMuted, writeMuted } from "./audio";
 import { Scene } from "./render";
 import { createGame, HEIGHT, simulate, step, TICK_RATE, WIDTH, type GameState } from "./sim";
 
@@ -60,6 +61,7 @@ export default function Game({ fontFamily = "system-ui, sans-serif", homeHref }:
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const gameRef = useRef<GameState | null>(null);
   const sceneRef = useRef<Scene | null>(null);
+  const soundRef = useRef<SoundBoard | null>(null);
   const phaseRef = useRef<Phase>("ready");
   const dropRef = useRef(false);
   const overAtRef = useRef(0);
@@ -67,10 +69,25 @@ export default function Game({ fontFamily = "system-ui, sans-serif", homeHref }:
   const [phase, setPhase] = useState<Phase>("ready");
   const [result, setResult] = useState<Result | null>(null);
   const best = useSyncExternalStore(subscribeBest, readBest, () => 0);
+  const muted = useSyncExternalStore(subscribeMuted, readMuted, () => false);
+
+  // One sound board per mounted game; keep its mute flag in sync with the saved preference.
+  useEffect(() => {
+    if (!soundRef.current) soundRef.current = new SoundBoard();
+    soundRef.current.setMuted(muted);
+  }, [muted]);
+
+  const toggleMute = useCallback(() => {
+    soundRef.current?.unlock();
+    writeMuted(!readMuted());
+  }, []);
 
   const start = useCallback(() => {
     gameRef.current = createGame(randomSeed());
     sceneRef.current?.reset();
+    soundRef.current?.unlock();
+    soundRef.current?.reset();
+    soundRef.current?.play("start");
     dropRef.current = false;
     phaseRef.current = "playing";
     setPhase("playing");
@@ -146,6 +163,7 @@ export default function Game({ fontFamily = "system-ui, sans-serif", homeHref }:
           dropRef.current = false;
           step(s, drop);
           scene.handle(s.events);
+          soundRef.current?.handle(s.events, s.streak);
           if (s.over) {
             acc = 0;
             finish(s);
@@ -170,6 +188,7 @@ export default function Game({ fontFamily = "system-ui, sans-serif", homeHref }:
 
   const press = useCallback(
     (fromKeyboard: boolean) => {
+      soundRef.current?.unlock();
       const p = phaseRef.current;
       if (p === "playing") dropRef.current = true;
       else if (p === "ready") start();
@@ -181,14 +200,27 @@ export default function Game({ fontFamily = "system-ui, sans-serif", homeHref }:
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.repeat) return;
+      if (e.code === "KeyM") {
+        toggleMute();
+        return;
+      }
       if (e.code === "Space" || e.code === "ArrowDown" || e.code === "Enter" || e.code === "KeyS") {
         e.preventDefault();
         press(true);
       }
     };
+    // Browsers only start audio from certain gestures (on touch screens that is
+    // the finger lifting, not pressing), so retry the unlock on those too.
+    const unlock = () => soundRef.current?.unlock();
     window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [press]);
+    window.addEventListener("pointerup", unlock);
+    window.addEventListener("touchend", unlock);
+    return () => {
+      window.removeEventListener("keydown", onKey);
+      window.removeEventListener("pointerup", unlock);
+      window.removeEventListener("touchend", unlock);
+    };
+  }, [press, toggleMute]);
 
   return (
     <div
@@ -199,7 +231,20 @@ export default function Game({ fontFamily = "system-ui, sans-serif", homeHref }:
       className="game-stage relative flex h-full w-full touch-none select-none justify-center overflow-hidden"
       style={{ fontFamily }}
     >
-      <canvas ref={canvasRef} className="block" aria-label="Santacoindotcom game" />
+      <div className="relative">
+        <canvas ref={canvasRef} className="block" aria-label="Santacoindotcom game" />
+        <button
+          type="button"
+          onPointerDown={(e) => e.stopPropagation()}
+          onClick={toggleMute}
+          aria-label={muted ? "Turn sound on" : "Turn sound off"}
+          aria-pressed={!muted}
+          title={muted ? "Sound off (M)" : "Sound on (M)"}
+          className="absolute bottom-[1.6%] left-[3%] z-20 grid h-10 w-10 place-items-center rounded-full bg-[#0b1230]/75 text-white/90 shadow-md transition hover:bg-[#0b1230] hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-amber-300"
+        >
+          <SpeakerIcon muted={muted} />
+        </button>
+      </div>
 
       {phase === "ready" && (
         <Overlay>
@@ -258,6 +303,22 @@ export default function Game({ fontFamily = "system-ui, sans-serif", homeHref }:
         </Overlay>
       )}
     </div>
+  );
+}
+
+function SpeakerIcon({ muted }: { muted: boolean }) {
+  return (
+    <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="M11 5 6 9H3v6h3l5 4z" fill="currentColor" />
+      {muted ? (
+        <path d="m16 9 6 6m0-6-6 6" />
+      ) : (
+        <>
+          <path d="M15.5 8.5a5 5 0 0 1 0 7" />
+          <path d="M18.5 5.5a9 9 0 0 1 0 13" />
+        </>
+      )}
+    </svg>
   );
 }
 
