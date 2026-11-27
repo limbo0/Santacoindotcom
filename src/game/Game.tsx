@@ -19,7 +19,7 @@ interface Result {
 }
 
 // --- personal best (per browser; the real leaderboard comes with wallets) ---
-const BEST_KEY = "chimney-drop:best";
+const BEST_KEY = "santacoindotcom:best";
 const bestListeners = new Set<() => void>();
 function readBest(): number {
   try {
@@ -191,14 +191,16 @@ export default function Game({ fontFamily = "system-ui, sans-serif", homeHref }:
       className="game-stage relative flex h-full w-full touch-none select-none justify-center overflow-hidden"
       style={{ fontFamily }}
     >
-      <canvas ref={canvasRef} className="block" aria-label="Chimney Drop game" />
+      <canvas ref={canvasRef} className="block" aria-label="Santacoindotcom game" />
 
       {phase === "ready" && (
         <Overlay>
           <p className="text-sm font-semibold uppercase tracking-[0.25em] text-amber-200/80">
             A Christmas Eve challenge
           </p>
-          <h1 className="mt-2 text-5xl font-bold leading-none text-white">Chimney Drop</h1>
+          <h1 className="mt-3 font-display text-[clamp(1.9rem,8.6vw,2.6rem)] leading-none tracking-wide text-white">
+            Santacoindotcom
+          </h1>
           <ul className="mt-6 space-y-2 text-left text-[15px] leading-snug text-slate-200">
             <li>🎁 Tap, click or press Space to drop a gift.</li>
             <li>🏠 Every chimney needs one — the sleigh keeps speeding up.</li>
@@ -277,7 +279,7 @@ function HomeLink({ href }: { href: string }) {
       onPointerDown={(e) => e.stopPropagation()}
       className="mt-4 inline-block text-sm text-slate-300 underline-offset-4 hover:underline"
     >
-      ← Back to home
+      ← Back to Santa Coin
     </a>
   );
 }

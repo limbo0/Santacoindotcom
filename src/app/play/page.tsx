@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
+import { site } from "@/config/site";
 import Game from "@/game/Game";
 import { fredoka } from "@/lib/fonts";
 
 export const metadata: Metadata = {
-  title: "Play — Chimney Drop",
+  title: `Play ${site.gameName}`,
 };
 
 export default function PlayPage() {

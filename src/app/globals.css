@@ -1,20 +1,150 @@
 @import "tailwindcss";
 
+/* Santa Coin: loud candy-cane meme look. Thick ink outlines, hard offset
+   shadows, sticker-like blocks on red / holly green / snow. */
 :root {
-  --background: #070b1f;
-  --foreground: #eef2ff;
+  --candy: #e8222e;
+  --candy-deep: #b3121c;
+  --holly: #12a150;
+  --holly-deep: #0b7a3b;
+  --gold: #ffc531;
+  --snow: #fff6e6;
+  --ink: #1d0f0f;
+  --night: #0b1230;
+  --background: var(--snow);
+  --foreground: var(--ink);
 }
 
 @theme inline {
+  --color-candy: var(--candy);
+  --color-candy-deep: var(--candy-deep);
+  --color-holly: var(--holly);
+  --color-holly-deep: var(--holly-deep);
+  --color-gold: var(--gold);
+  --color-snow: var(--snow);
+  --color-ink: var(--ink);
+  --color-night: var(--night);
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-fredoka), system-ui, sans-serif;
+  --font-display: var(--font-luckiest), var(--font-fredoka), system-ui, sans-serif;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-sans);
+}
+
+h1,
+h2 {
+  text-wrap: balance;
+}
+
+/* ---- sticker primitives ---------------------------------------------- */
+
+.sticker {
+  border: 3px solid var(--ink);
+  box-shadow: 5px 5px 0 var(--ink);
+}
+
+.sticker-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border: 3px solid var(--ink);
+  border-radius: 999px;
+  padding: 0.8rem 1.6rem;
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  letter-spacing: 0.04em;
+  line-height: 1;
+  padding-top: 0.95rem;
+  box-shadow: 4px 4px 0 var(--ink);
+  transition:
+    transform 120ms ease,
+    box-shadow 120ms ease;
+}
+.sticker-btn:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0 var(--ink);
+}
+.sticker-btn:active {
+  transform: translate(3px, 3px);
+  box-shadow: 1px 1px 0 var(--ink);
+}
+.sticker-btn:focus-visible,
+.focus-ring:focus-visible {
+  outline: 3px solid var(--gold);
+  outline-offset: 3px;
+}
+
+/* Chunky outlined display type */
+.shout {
+  font-family: var(--font-display);
+  color: var(--snow);
+  -webkit-text-stroke: 3px var(--ink);
+  paint-order: stroke fill;
+  text-shadow: 5px 5px 0 var(--ink);
+  letter-spacing: 0.02em;
+  line-height: 0.9;
+}
+
+.candy-stripe {
+  background: repeating-linear-gradient(-45deg, var(--candy) 0 18px, var(--snow) 18px 36px);
+}
+
+.dots {
+  background-image: radial-gradient(rgb(255 255 255 / 0.18) 2px, transparent 2.5px);
+  background-size: 26px 26px;
+}
+
+/* ---- motion ---------------------------------------------------------- */
+
+@keyframes bob {
+  0%,
+  100% {
+    transform: translateY(0) rotate(-4deg);
+  }
+  50% {
+    transform: translateY(-16px) rotate(3deg);
+  }
+}
+@keyframes wiggle {
+  0%,
+  100% {
+    transform: rotate(var(--tilt, -6deg));
+  }
+  50% {
+    transform: rotate(calc(var(--tilt, -6deg) * -0.4));
+  }
+}
+@keyframes marquee {
+  to {
+    transform: translateX(-50%);
+  }
+}
+.anim-bob {
+  animation: bob 3.2s ease-in-out infinite;
+}
+.anim-wiggle {
+  transform: rotate(var(--tilt, -6deg));
+  animation: wiggle 2.6s ease-in-out infinite;
+}
+.anim-marquee {
+  animation: marquee 28s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .anim-bob,
+  .anim-wiggle,
+  .anim-marquee {
+    animation: none;
+  }
+  .sticker-btn {
+    transition: none;
+  }
 }
 
 /* Game letterboxing: on tall screens pin the playfield to the bottom so the

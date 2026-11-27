@@ -1,5 +1,5 @@
 /**
- * Canvas renderer + cosmetic effects for Chimney Drop.
+ * Canvas renderer + cosmetic effects for the Santacoindotcom game.
  * Nothing here affects game rules, so it is free to use Math.random, time, etc.
  */
 import {
@@ -580,11 +580,13 @@ export class Scene {
       const k = p.life / p.max;
       ctx.globalAlpha = k < 0.7 ? 1 : 1 - (k - 0.7) / 0.3;
       ctx.font = `700 ${p.size}px ${this.font}`;
+      const half = ctx.measureText(p.text).width / 2 + 10;
+      const x = Math.min(WIDTH - half, Math.max(half, p.x)); // keep popups inside the frame
       ctx.lineWidth = 5;
       ctx.strokeStyle = "rgba(7,11,31,0.85)";
-      ctx.strokeText(p.text, p.x, p.y);
+      ctx.strokeText(p.text, x, p.y);
       ctx.fillStyle = p.color;
-      ctx.fillText(p.text, p.x, p.y);
+      ctx.fillText(p.text, x, p.y);
     }
     ctx.globalAlpha = 1;
   }

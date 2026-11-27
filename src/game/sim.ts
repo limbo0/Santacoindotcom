@@ -1,5 +1,5 @@
 /**
- * Chimney Drop — deterministic game simulation.
+ * Santacoindotcom — deterministic game simulation.
  *
  * All game rules live here, separate from rendering, so the exact same code can
  * re-run a game on the server from (seed, drop ticks) and recompute the score.
