@@ -3,6 +3,7 @@ import Coin from "@/components/Coin";
 import CopyAddress from "@/components/CopyAddress";
 import TrackedLink from "@/components/TrackedLink";
 import { isLaunched, site } from "@/config/site";
+import LivePlayers from "@/components/LivePlayers";
 import GamePreview from "@/game/GamePreview";
 import { fredoka } from "@/lib/fonts";
 
@@ -92,6 +93,7 @@ function Hero() {
               </TrackedLink>
               <FollowButton location="hero" />
             </div>
+            <LivePlayers className="sticker mt-6 rounded-full bg-ink px-4 pb-1.5 pt-2 text-sm font-semibold text-snow" />
           </div>
 
           <div className="relative mx-auto w-full max-w-[420px]">
@@ -187,6 +189,7 @@ function GameSection() {
             <TrackedLink href="/play" event="Play Click" location="game" className="sticker-btn bg-candy text-snow">
               Play {site.gameName}
             </TrackedLink>
+            <LivePlayers className="text-sm font-semibold text-emerald-300" />
             <span className="rounded-full border-[3px] border-dashed border-gold/70 px-4 py-2 text-sm font-semibold text-gold">
               Solana wallet leaderboard coming soon
             </span>

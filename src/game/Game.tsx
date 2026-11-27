@@ -2,6 +2,8 @@
 
 import { track } from "@vercel/analytics";
 import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
+import { PlayingBadge } from "@/components/LivePlayers";
+import { usePresenceHeartbeat } from "@/lib/usePresence";
 import { readMuted, SoundBoard, subscribeMuted, writeMuted } from "./audio";
 import { Scene } from "./render";
 import { createGame, HEIGHT, simulate, step, TICK_RATE, WIDTH, type GameState } from "./sim";
@@ -70,6 +72,7 @@ export default function Game({ fontFamily = "system-ui, sans-serif", homeHref }:
   const [result, setResult] = useState<Result | null>(null);
   const best = useSyncExternalStore(subscribeBest, readBest, () => 0);
   const muted = useSyncExternalStore(subscribeMuted, readMuted, () => false);
+  const playing = usePresenceHeartbeat();
 
   // One sound board per mounted game; keep its mute flag in sync with the saved preference.
   useEffect(() => {
@@ -269,6 +272,7 @@ export default function Game({ fontFamily = "system-ui, sans-serif", homeHref }:
             Start
           </button>
           {best > 0 && <p className="mt-3 text-sm text-slate-300">Your best: {best}</p>}
+          {playing ? <PlayingBadge count={playing} className="mt-3 text-sm font-medium text-emerald-200" /> : null}
           {homeHref && <HomeLink href={homeHref} />}
         </Overlay>
       )}
@@ -295,6 +299,7 @@ export default function Game({ fontFamily = "system-ui, sans-serif", homeHref }:
             Play again
           </button>
           <p className="mt-3 text-sm text-slate-300">Best: {Math.max(best, result.score)}</p>
+          {playing ? <PlayingBadge count={playing} className="mt-2 text-sm font-medium text-emerald-200" /> : null}
           <p className="mt-4 text-xs text-slate-400">
             {result.verified ? "✓ Score re-verified from replay" : "⚠ Replay mismatch"} · seed {result.seed} ·{" "}
             {result.drops} drops

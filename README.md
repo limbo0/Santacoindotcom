@@ -9,6 +9,12 @@ Landing page for Santa Coin plus **Santacoindotcom**, a one-button Christmas gam
 
 Edit `src/config/site.ts`: set `contractAddress` and `pumpFunUrl`, then push. The hero, ticker and "How to get Santa Coin" section switch from "launching soon" to showing the address (with a copy button) and a "Buy on pump.fun" button.
 
+## "Playing now" counter
+
+Open game tabs send a heartbeat to `/api/presence` every 25 s while visible; the count is the number of tabs seen in the last 70 s, stored in Upstash Redis.
+
+Setup on Vercel: **Storage → Create Database → Upstash (Redis)** and connect it to this project. That adds `KV_REST_API_URL` / `KV_REST_API_TOKEN` (or `UPSTASH_REDIS_REST_URL` / `UPSTASH_REDIS_REST_TOKEN`); redeploy afterwards. Without them the counter hides itself in production. Locally it uses an in-memory store (`next dev`, or `PRESENCE_MEMORY=1 next start`).
+
 ## Develop
 
 ```bash
